@@ -1,13 +1,32 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
+import { FavouritesService } from 'src/favourites/favourites.service';
+import { TRACK } from 'src/favourites/types/collection.type';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { TracksRepository } from './track.repository';
 
 @Injectable()
 export class TracksService {
-  constructor(private readonly tracksRepository: TracksRepository) {}
+  constructor(
+    private readonly tracksRepository: TracksRepository,
+    @Inject(forwardRef(() => FavouritesService))
+    private readonly favService: FavouritesService,
+  ) {}
 
   async delete(id: string) {
+    try {
+      this.favService.removeEntity(id, TRACK);
+    } catch (error) {
+      Logger.log(error);
+    }
+
     const track = await this.tracksRepository.delete(id);
     if (track) {
       return null;
