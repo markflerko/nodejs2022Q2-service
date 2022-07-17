@@ -10,19 +10,11 @@ export class TracksRepository {
 
   constructor() {
     this.tracks = [
-      //TODO: remove
-      {
-        id: 'acfdf874-7fee-4de3-899b-a6ab98a14214',
-        name: 'morgenshtern',
-        artistId: 'aeff88d3-33a6-4df3-9094-892290806f64',
-        albumId: '2f2b2498-b3ed-4ad0-b8f7-b32c57fe746c',
-        duration: 300000,
-      },
       {
         id: '206049d0-f6a5-4ef1-aef3-069d9dff6aa5',
         name: 'morgenshtern',
-        artistId: 'aeff88d3-33a6-4df3-9094-892290806f64',
-        albumId: '2f2b2498-b3ed-4ad0-b8f7-b32c57fe746c',
+        artistId: 'acfdf874-7fee-4de3-899b-a6ab98a14214',
+        albumId: 'aeff88d3-33a6-4df3-9094-892290806f64',
         duration: 300000,
       },
     ];

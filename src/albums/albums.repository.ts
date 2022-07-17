@@ -12,9 +12,9 @@ export class AlbumsRepository {
     this.albums = [
       //TODO: remove
       {
-        id: 'acfdf874-7fee-4de3-899b-a6ab98a14214',
+        id: 'aeff88d3-33a6-4df3-9094-892290806f64',
         name: 'morgenshtern',
-        artistId: 'aeff88d3-33a6-4df3-9094-892290806f64',
+        artistId: 'acfdf874-7fee-4de3-899b-a6ab98a14214',
         year: 2017,
       },
     ];
