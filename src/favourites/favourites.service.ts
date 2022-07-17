@@ -24,7 +24,29 @@ export class FavouritesService {
   ) {}
 
   async findAll() {
-    return await this.favsRepository.findAll();
+    const { albums, tracks, artists } = await this.favsRepository.findAll();
+
+    const result = {};
+
+    result['albums'] = await Promise.all(
+      albums.map((item) => {
+        return this.albumService.findOne(item);
+      }),
+    );
+
+    result['tracks'] = await Promise.all(
+      tracks.map((item) => {
+        return this.trackService.findOne(item);
+      }),
+    );
+
+    result['artists'] = await Promise.all(
+      artists.map((item) => {
+        return this.artistService.findOne(item);
+      }),
+    );
+
+    return result;
   }
 
   async removeEntity(

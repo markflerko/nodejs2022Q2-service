@@ -9,15 +9,7 @@ export class AlbumsRepository {
   private readonly albums: Album[];
 
   constructor() {
-    this.albums = [
-      //TODO: remove
-      {
-        id: 'aeff88d3-33a6-4df3-9094-892290806f64',
-        name: 'morgenshtern',
-        artistId: 'acfdf874-7fee-4de3-899b-a6ab98a14214',
-        year: 2017,
-      },
-    ];
+    this.albums = [];
   }
 
   delete(id: string) {

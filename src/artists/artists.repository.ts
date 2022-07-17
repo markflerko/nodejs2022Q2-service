@@ -9,14 +9,7 @@ export class ArtistsRepository {
   private readonly artists: Artist[];
 
   constructor() {
-    this.artists = [
-      //TODO: remove
-      {
-        id: 'acfdf874-7fee-4de3-899b-a6ab98a14214',
-        name: 'morgenshtern',
-        grammy: false,
-      },
-    ];
+    this.artists = [];
   }
 
   delete(id: string) {

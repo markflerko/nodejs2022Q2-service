@@ -8,13 +8,13 @@ export class FavouritesRepository {
 
   constructor() {
     this.favs = {
-      artists: ['acfdf874-7fee-4de3-899b-a6ab98a14214'],
-      albums: ['aeff88d3-33a6-4df3-9094-892290806f64'],
-      tracks: ['206049d0-f6a5-4ef1-aef3-069d9dff6aa5'],
+      artists: [],
+      albums: [],
+      tracks: [],
     };
   }
 
-  findAll() {
+  findAll(): Promise<Favourites> {
     return new Promise((res) => res(this.favs));
   }
 

@@ -9,17 +9,7 @@ export class UsersRepository {
   private readonly users: User[];
 
   constructor() {
-    this.users = [
-      //TODO: remove
-      {
-        id: "acfdf874-7fee-4de3-899b-a6ab98a14214'",
-        login: 'markflerko',
-        password: 'passWork1',
-        version: 1,
-        createdAt: 1658062576458,
-        updatedAt: 1658062576458,
-      },
-    ];
+    this.users = [];
   }
 
   update(id: string, dto: UpdatePasswordDto) {
@@ -28,7 +18,11 @@ export class UsersRepository {
     let result: User | null;
 
     if (userIndex > -1) {
-      this.users[userIndex] = { ...this.users[userIndex], ...dto };
+      this.users[userIndex] = {
+        ...this.users[userIndex],
+        ...dto,
+        version: this.users[userIndex].version + 1,
+      };
       result = this.users[userIndex];
     } else {
       result = null;
@@ -72,7 +66,7 @@ export class UsersRepository {
   create(dto: CreateUserDto) {
     const user = {
       id: uuidv4(),
-      version: 0,
+      version: 1,
       createdAt: Date.now(),
       updatedAt: Date.now(),
       ...dto,
