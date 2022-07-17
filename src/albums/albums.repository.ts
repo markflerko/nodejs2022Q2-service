@@ -63,7 +63,7 @@ export class AlbumsRepository {
     return new Promise((res) => res(result));
   }
 
-  findAll() {
+  findAll(): Promise<Album[]> {
     return new Promise((res) => res(this.albums));
   }
 

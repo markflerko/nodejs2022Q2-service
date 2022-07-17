@@ -27,7 +27,11 @@ export class FavouritesService {
     return await this.favsRepository.findAll();
   }
 
-  async removeEntity(id: string, entityType: CollectionType) {
+  async removeEntity(
+    id: string,
+    entityType: CollectionType,
+    isService = false,
+  ) {
     const serviceName = getMappedService(entityType);
 
     await this[serviceName].findOne(id);
@@ -38,10 +42,14 @@ export class FavouritesService {
       return entity;
     }
 
-    throw new HttpException(
-      `${entityType} not favourite`,
-      HttpStatus.NOT_FOUND,
-    );
+    if (isService === true) {
+      return entity;
+    } else {
+      throw new HttpException(
+        `${entityType} not favourite`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 
   async addEntity(id: string, entityType: CollectionType) {

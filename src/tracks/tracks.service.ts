@@ -21,11 +21,7 @@ export class TracksService {
   ) {}
 
   async delete(id: string) {
-    try {
-      this.favService.removeEntity(id, TRACK);
-    } catch (error) {
-      Logger.log(error);
-    }
+    this.favService.removeEntity(id, TRACK, true);
 
     const track = await this.tracksRepository.delete(id);
     if (track) {

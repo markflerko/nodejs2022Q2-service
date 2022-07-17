@@ -4,10 +4,10 @@ import {
   HttpStatus,
   Inject,
   Injectable,
-  Logger,
 } from '@nestjs/common';
 import { FavouritesService } from 'src/favourites/favourites.service';
 import { ALBUM } from 'src/favourites/types/collection.type';
+import { TracksService } from 'src/tracks/tracks.service';
 import { AlbumsRepository } from './albums.repository';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-artist.dto';
@@ -18,14 +18,19 @@ export class AlbumsService {
     private readonly albumsRepository: AlbumsRepository,
     @Inject(forwardRef(() => FavouritesService))
     private readonly favService: FavouritesService,
+    private readonly trackService: TracksService,
   ) {}
 
   async delete(id: string) {
-    try {
-      this.favService.removeEntity(id, ALBUM);
-    } catch (error) {
-      Logger.log(error);
-    }
+    this.favService.removeEntity(id, ALBUM, true);
+
+    await this.trackService.findAll().then((tracks) => {
+      tracks.forEach((item) => {
+        if (item.albumId === id) {
+          item.albumId = null;
+        }
+      });
+    });
 
     const album = await this.albumsRepository.delete(id);
     if (album) {

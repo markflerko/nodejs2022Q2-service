@@ -4,8 +4,8 @@ import {
   HttpStatus,
   Inject,
   Injectable,
-  Logger,
 } from '@nestjs/common';
+import { AlbumsService } from 'src/albums/albums.service';
 import { FavouritesService } from 'src/favourites/favourites.service';
 import { ARTIST } from 'src/favourites/types/collection.type';
 import { ArtistsRepository } from './artists.repository';
@@ -18,14 +18,20 @@ export class ArtistsService {
     private readonly artistsRepository: ArtistsRepository,
     @Inject(forwardRef(() => FavouritesService))
     private readonly favService: FavouritesService,
+    @Inject(forwardRef(() => AlbumsService))
+    private readonly albumService: AlbumsService,
   ) {}
 
   async delete(id: string) {
-    try {
-      this.favService.removeEntity(id, ARTIST);
-    } catch (error) {
-      Logger.log(error);
-    }
+    this.favService.removeEntity(id, ARTIST, true);
+
+    await this.albumService.findAll().then((albums) => {
+      albums.forEach((item) => {
+        if (item.artistId === id) {
+          item.artistId = null;
+        }
+      });
+    });
 
     const artist = await this.artistsRepository.delete(id);
     if (artist) {

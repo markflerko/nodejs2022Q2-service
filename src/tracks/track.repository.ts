@@ -63,7 +63,7 @@ export class TracksRepository {
     return new Promise((res) => res(result));
   }
 
-  findAll() {
+  findAll(): Promise<Track[]> {
     return new Promise((res) => res(this.tracks));
   }
 
