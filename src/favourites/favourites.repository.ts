@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Favourites } from './schemas/favs.schema';
+import { CollectionType } from './types/collection.type';
 
 @Injectable()
 export class FavouritesRepository {
@@ -17,13 +18,16 @@ export class FavouritesRepository {
     return new Promise((res) => res(this.favs));
   }
 
-  async removeTrack(id: string) {
-    const trackIndex = this.favs.tracks.findIndex((trackId) => trackId === id);
+  async removeEntity(id: string, entityType: CollectionType) {
+    const entityIndex = this.favs[entityType].findIndex(
+      (entityId: string) => entityId === id,
+    );
 
     let result: string | null;
 
-    if (trackIndex > -1) {
-      return this.favs.tracks.splice(trackIndex, 1)[0];
+    if (entityIndex > -1) {
+      const removedItem = this.favs[entityType].splice(entityIndex, 1)[0];
+      return removedItem;
     } else {
       result = null;
     }
@@ -31,11 +35,11 @@ export class FavouritesRepository {
     return new Promise((res) => res(result));
   }
 
-  async addTrack(id: string) {
-    this.favs.tracks.push(id);
+  async addEntity(id: string, entityType: CollectionType) {
+    this.favs[entityType].push(id);
 
-    this.favs.tracks = Array.from(new Set(this.favs.tracks));
+    this.favs[entityType] = Array.from(new Set(this.favs[entityType]));
 
-    return new Promise((res) => res(this.favs.tracks));
+    return new Promise((res) => res(this.favs[entityType]));
   }
 }

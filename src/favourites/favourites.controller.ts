@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { IdParams } from './dto/id-param.dto';
 import { FavouritesService } from './favourites.service';
+import { ALBUM, ARTIST, TRACK } from './types/collection.type';
 
 @Controller('favs')
 export class FavouritesController {
@@ -20,13 +21,35 @@ export class FavouritesController {
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('tracks/:id')
-  async removeTrack(@Param() params: IdParams) {
-    return await this.favsService.removeTrack(params.id);
+  @Delete('artist/:id')
+  async removeArtist(@Param() params: IdParams) {
+    return await this.favsService.removeEntity(params.id, ARTIST);
   }
 
-  @Post('tracks/:id')
+  @Post('artist/:id')
+  async addArtist(@Param() params: IdParams) {
+    return await this.favsService.addEntity(params.id, ARTIST);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('album/:id')
+  async removeAlbum(@Param() params: IdParams) {
+    return await this.favsService.removeEntity(params.id, ALBUM);
+  }
+
+  @Post('album/:id')
+  async addAlbum(@Param() params: IdParams) {
+    return await this.favsService.addEntity(params.id, ALBUM);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('track/:id')
+  async removeTrack(@Param() params: IdParams) {
+    return await this.favsService.removeEntity(params.id, TRACK);
+  }
+
+  @Post('track/:id')
   async addTrack(@Param() params: IdParams) {
-    return await this.favsService.addTrack(params.id);
+    return await this.favsService.addEntity(params.id, TRACK);
   }
 }
