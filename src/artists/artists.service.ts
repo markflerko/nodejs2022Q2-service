@@ -8,6 +8,7 @@ import {
 import { AlbumsService } from 'src/albums/albums.service';
 import { FavouritesService } from 'src/favourites/favourites.service';
 import { ARTIST } from 'src/favourites/types/collection.type';
+import { TracksService } from 'src/tracks/tracks.service';
 import { ArtistsRepository } from './artists.repository';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
@@ -20,13 +21,23 @@ export class ArtistsService {
     private readonly favService: FavouritesService,
     @Inject(forwardRef(() => AlbumsService))
     private readonly albumService: AlbumsService,
+    @Inject(forwardRef(() => TracksService))
+    private readonly trackService: TracksService,
   ) {}
 
   async delete(id: string) {
-    this.favService.removeEntity(id, ARTIST, true);
+    await this.favService.removeEntity(id, ARTIST, true);
 
     await this.albumService.findAll().then((albums) => {
       albums.forEach((item) => {
+        if (item.artistId === id) {
+          item.artistId = null;
+        }
+      });
+    });
+
+    await this.trackService.findAll().then((tracks) => {
+      tracks.forEach((item) => {
         if (item.artistId === id) {
           item.artistId = null;
         }

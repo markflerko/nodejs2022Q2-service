@@ -22,7 +22,7 @@ export class AlbumsService {
   ) {}
 
   async delete(id: string) {
-    this.favService.removeEntity(id, ALBUM, true);
+    await this.favService.removeEntity(id, ALBUM, true);
 
     await this.trackService.findAll().then((tracks) => {
       tracks.forEach((item) => {

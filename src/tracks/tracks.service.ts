@@ -4,7 +4,6 @@ import {
   HttpStatus,
   Inject,
   Injectable,
-  Logger,
 } from '@nestjs/common';
 import { FavouritesService } from 'src/favourites/favourites.service';
 import { TRACK } from 'src/favourites/types/collection.type';
@@ -21,7 +20,7 @@ export class TracksService {
   ) {}
 
   async delete(id: string) {
-    this.favService.removeEntity(id, TRACK, true);
+    await this.favService.removeEntity(id, TRACK, true);
 
     const track = await this.tracksRepository.delete(id);
     if (track) {
