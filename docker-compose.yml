@@ -5,6 +5,7 @@ services:
     container_name: main
     build:
       context: .
+      dockerfile: ./Dockerfile
     env_file:
       - .env
     volumes:
@@ -15,3 +16,27 @@ services:
       - 9229:9229
     command: npm run start:dev
     restart: always
+    networks:
+      - postgres
+
+  postgres:
+    container_name: postgres
+    image: postgres:12
+    env_file:
+      - .env
+    environment:
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - postgres
+
+volumes:
+  pgdata:
+
+networks:
+  postgres:
+    driver: bridge
