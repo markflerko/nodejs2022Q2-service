@@ -18,6 +18,7 @@ export class AlbumsService {
     private readonly albumsRepository: AlbumsRepository,
     @Inject(forwardRef(() => FavouritesService))
     private readonly favService: FavouritesService,
+    @Inject(forwardRef(() => TracksService))
     private readonly trackService: TracksService,
   ) {}
 
