@@ -5,16 +5,19 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { FavouritesService } from 'src/favourites/favourites.service';
 import { TRACK } from 'src/favourites/types/collection.type';
+import { Repository } from 'typeorm';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { TracksRepository } from './track.repository';
+import { Track } from './schemas/tracks.schema';
 
 @Injectable()
 export class TracksService {
   constructor(
-    private readonly tracksRepository: TracksRepository,
+    @InjectRepository(Track)
+    private tracksRepository: Repository<Track>,
     @Inject(forwardRef(() => FavouritesService))
     private readonly favService: FavouritesService,
   ) {}
@@ -22,23 +25,28 @@ export class TracksService {
   async delete(id: string) {
     await this.favService.removeEntity(id, TRACK, true);
 
-    const track = await this.tracksRepository.delete(id);
-    if (track) {
-      return null;
+    const deleteResponse = await this.tracksRepository.delete(id);
+    if (!deleteResponse.affected) {
+      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
-    throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
   }
 
   async update(id: string, dto: UpdateTrackDto) {
-    const track = await this.tracksRepository.update(id, dto);
-    if (track) {
-      return track;
+    await this.tracksRepository.update(id, dto);
+
+    const updatedTrack = await this.tracksRepository.findOne({
+      where: { id },
+    });
+
+    if (updatedTrack) {
+      return updatedTrack;
     }
-    throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+
+    throw new HttpException('Track not updated', HttpStatus.NOT_FOUND);
   }
 
   async findOne(id: string) {
-    const track = await this.tracksRepository.findOne(id);
+    const track = await this.tracksRepository.findOne({ where: { id } });
     if (track) {
       return track;
     }
@@ -46,12 +54,13 @@ export class TracksService {
   }
 
   async findAll() {
-    const tracks = await this.tracksRepository.findAll();
+    const tracks = await this.tracksRepository.find();
     return tracks;
   }
 
   async create(dto: CreateTrackDto) {
     const track = await this.tracksRepository.create(dto);
+    await this.tracksRepository.save(track);
     return track;
   }
 }
