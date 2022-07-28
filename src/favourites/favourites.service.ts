@@ -5,16 +5,28 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { AlbumsService } from 'src/albums/albums.service';
+import { Album } from 'src/albums/schemas/album.schema';
 import { ArtistsService } from 'src/artists/artists.service';
+import Artist from 'src/artists/schemas/artist.schema';
+import { Track } from 'src/tracks/schemas/tracks.schema';
 import { TracksService } from 'src/tracks/tracks.service';
-import { FavouritesRepository } from './favourites.repository';
-import { CollectionType, getMappedService } from './types/collection.type';
+import { Repository } from 'typeorm';
+import { Favourites } from './schemas/favs.schema';
+import {
+  ALBUM,
+  ARTIST,
+  CollectionType,
+  getMappedService,
+  TRACK,
+} from './types/collection.type';
 
 @Injectable()
 export class FavouritesService {
   constructor(
-    private readonly favsRepository: FavouritesRepository,
+    @InjectRepository(Favourites)
+    private favsRepository: Repository<Favourites>,
     @Inject(forwardRef(() => TracksService))
     private readonly trackService: TracksService,
     @Inject(forwardRef(() => AlbumsService))
@@ -24,25 +36,25 @@ export class FavouritesService {
   ) {}
 
   async findAll() {
-    const { albums, tracks, artists } = await this.favsRepository.findAll();
+    const { albums, tracks, artists } = await this.findEntity();
 
     const result = {};
 
-    result['albums'] = await Promise.all(
-      albums.map((item) => {
-        return this.albumService.findOne(item);
+    result[ALBUM] = await Promise.all(
+      albums.map(({ id }) => {
+        return this.albumService.findOne(id);
       }),
     );
 
-    result['tracks'] = await Promise.all(
-      tracks.map((item) => {
-        return this.trackService.findOne(item);
+    result[TRACK] = await Promise.all(
+      tracks.map(({ id }) => {
+        return this.trackService.findOne(id);
       }),
     );
 
-    result['artists'] = await Promise.all(
-      artists.map((item) => {
-        return this.artistService.findOne(item);
+    result[ARTIST] = await Promise.all(
+      artists.map(({ id }) => {
+        return this.artistService.findOne(id);
       }),
     );
 
@@ -57,15 +69,18 @@ export class FavouritesService {
     const serviceName = getMappedService(entityType);
 
     await this[serviceName].findOne(id);
+    const fav = await this.findEntity();
 
-    const entity = await this.favsRepository.removeEntity(id, entityType);
+    const index = fav[entityType].findIndex((item) => item.id === id);
 
-    if (entity) {
-      return entity;
+    delete fav[entityType][index];
+
+    if (fav) {
+      return fav;
     }
 
     if (isService === true) {
-      return entity;
+      return fav;
     } else {
       throw new HttpException(
         `${entityType} not favourite`,
@@ -74,19 +89,34 @@ export class FavouritesService {
     }
   }
 
+  private async findEntity(): Promise<Favourites> {
+    const favs = await this.favsRepository.findOne({
+      where: {},
+      relations: [ARTIST, TRACK, ALBUM],
+    });
+    if (favs) {
+      return favs;
+    }
+    return { [ARTIST]: [], [TRACK]: [], [ALBUM]: [] };
+  }
+
   async addEntity(id: string, entityType: CollectionType) {
     try {
       const serviceName = getMappedService(entityType);
 
-      await this[serviceName].findOne(id);
+      const entity: Album | Artist | Track = await this[serviceName].findOne(
+        id,
+      );
+      const fav = await this.findEntity();
 
-      const entity = await this.favsRepository.addEntity(id, entityType);
+      fav[entityType].push(entity as Album & Artist & Track);
+      await this.favsRepository.save(fav);
 
-      if (entity === null) {
+      if (fav === null) {
         throw new Error();
       }
 
-      return entity;
+      return fav;
     } catch (error) {
       throw new HttpException(
         `artist with id === ${id} doesn't exist`,

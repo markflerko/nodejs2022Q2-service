@@ -6,12 +6,17 @@ import {
   HttpStatus,
   Param,
   Post,
+  SerializeOptions,
 } from '@nestjs/common';
 import { IdParams } from './dto/id-param.dto';
 import { FavouritesService } from './favourites.service';
 import { ALBUM, ARTIST, TRACK } from './types/collection.type';
 
 @Controller('favs')
+@SerializeOptions({
+  strategy: 'exposeAll',
+  excludePrefixes: ['id'],
+})
 export class FavouritesController {
   constructor(private readonly favsService: FavouritesService) {}
 
