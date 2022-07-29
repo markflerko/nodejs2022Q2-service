@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { Album } from 'src/albums/schemas/album.schema';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Artist {
@@ -10,6 +12,10 @@ export class Artist {
 
   @Column()
   grammy: boolean;
+
+  @OneToMany(() => Album, (album) => album.artist, { cascade: true })
+  @Exclude()
+  albums: Album[];
 }
 
 export default Artist;

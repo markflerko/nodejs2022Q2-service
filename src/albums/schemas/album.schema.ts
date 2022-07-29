@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import Artist from 'src/artists/schemas/artist.schema';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Album {
@@ -11,6 +13,13 @@ export class Album {
   @Column()
   year: number;
 
-  @Column()
-  artistId: string | null; // refers to Artist
+  @Column({ nullable: true })
+  artistId: string | null;
+
+  @ManyToOne(() => Artist, (artist) => artist.albums, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @Exclude()
+  artist: Artist;
 }
