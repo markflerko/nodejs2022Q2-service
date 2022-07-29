@@ -35,10 +35,14 @@ export class FavouritesService {
     private readonly artistService: ArtistsService,
   ) {}
 
-  async findAll() {
+  async findAll(): Promise<Favourites> {
     const { albums, tracks, artists } = await this.findEntity();
 
-    const result = {};
+    const result = {
+      [ALBUM]: [],
+      [TRACK]: [],
+      [ARTIST]: [],
+    };
 
     result[ALBUM] = await Promise.all(
       albums.map(({ id }) => {
@@ -75,6 +79,8 @@ export class FavouritesService {
 
     delete fav[entityType][index];
 
+    await this.favsRepository.save(fav);
+
     if (fav) {
       return fav;
     }
@@ -109,11 +115,13 @@ export class FavouritesService {
       );
       const fav = await this.findEntity();
 
-      fav[entityType].push(entity as Album & Artist & Track);
-      await this.favsRepository.save(fav);
+      const isAlreadyFavs = (
+        fav[entityType] as Album[] & Artist[] & Track[]
+      ).find((item) => item.id === entity.id);
 
-      if (fav === null) {
-        throw new Error();
+      if (!isAlreadyFavs) {
+        fav[entityType].push(entity as Album & Artist & Track);
+        await this.favsRepository.save(fav);
       }
 
       return fav;
