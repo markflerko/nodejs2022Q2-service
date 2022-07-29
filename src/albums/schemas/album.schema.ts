@@ -32,8 +32,6 @@ export class Album {
 
   @OneToMany(() => Track, (track) => track.album, {
     cascade: true,
-    nullable: true,
-    onDelete: 'SET NULL',
   })
   @Exclude()
   tracks: Track[];

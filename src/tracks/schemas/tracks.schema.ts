@@ -10,7 +10,7 @@ export class Track {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   artistId: string | null; // refers to Artist
 
   @Column({ nullable: true })

@@ -15,8 +15,6 @@ export class Artist {
 
   @OneToMany(() => Album, (album) => album.artist, {
     cascade: true,
-    nullable: true,
-    onDelete: 'SET NULL',
   })
   @Exclude()
   albums: Album[];
