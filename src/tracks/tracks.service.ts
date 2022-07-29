@@ -1,13 +1,5 @@
-import {
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FavouritesService } from 'src/favourites/favourites.service';
-import { TRACK } from 'src/favourites/types/collection.type';
 import { Repository } from 'typeorm';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
@@ -18,13 +10,9 @@ export class TracksService {
   constructor(
     @InjectRepository(Track)
     private tracksRepository: Repository<Track>,
-    @Inject(forwardRef(() => FavouritesService))
-    private readonly favService: FavouritesService,
   ) {}
 
   async delete(id: string) {
-    await this.favService.removeEntity(id, TRACK, true);
-
     const deleteResponse = await this.tracksRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);

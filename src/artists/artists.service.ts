@@ -1,15 +1,5 @@
-import {
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AlbumsService } from 'src/albums/albums.service';
-import { FavouritesService } from 'src/favourites/favourites.service';
-import { ARTIST } from 'src/favourites/types/collection.type';
-import { TracksService } from 'src/tracks/tracks.service';
 import { Repository } from 'typeorm';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
@@ -20,12 +10,6 @@ export class ArtistsService {
   constructor(
     @InjectRepository(Artist)
     private artistsRepository: Repository<Artist>,
-    @Inject(forwardRef(() => FavouritesService))
-    private readonly favService: FavouritesService,
-    @Inject(forwardRef(() => AlbumsService))
-    private readonly albumService: AlbumsService,
-    @Inject(forwardRef(() => TracksService))
-    private readonly trackService: TracksService,
   ) {}
 
   async create(dto: CreateArtistDto) {
@@ -65,24 +49,6 @@ export class ArtistsService {
   }
 
   async delete(id: string) {
-    await this.favService.removeEntity(id, ARTIST, true);
-
-    await this.albumService.findAll().then((albums) => {
-      albums.forEach((item) => {
-        if (item.artistId === id) {
-          item.artistId = null;
-        }
-      });
-    });
-
-    await this.trackService.findAll().then((tracks) => {
-      tracks.forEach((item) => {
-        if (item.artistId === id) {
-          item.artistId = null;
-        }
-      });
-    });
-
     const deleteResponse = await this.artistsRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
