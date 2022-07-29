@@ -8,7 +8,6 @@ import {
   Param,
   Post,
   Put,
-  SerializeOptions,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { IdParams } from './dto/id-param.dto';
@@ -16,10 +15,6 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UsersService } from './users.service';
 
 @Controller('user')
-@SerializeOptions({
-  strategy: 'exposeAll',
-  excludePrefixes: ['password'],
-})
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
