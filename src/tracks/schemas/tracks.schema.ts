@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Album } from 'src/albums/schemas/album.schema';
+import Artist from 'src/artists/schemas/artist.schema';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -25,4 +26,11 @@ export class Track {
   })
   @Exclude()
   album: Album;
+
+  @ManyToOne(() => Artist, (artist) => artist.tracks, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @Exclude()
+  artist: Artist;
 }
