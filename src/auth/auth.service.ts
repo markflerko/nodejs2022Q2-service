@@ -64,9 +64,7 @@ export class AuthService {
     }
   }
 
-  async login(userId: string) {
-    const payload: TokenPayload = { userId };
-
+  async login(payload: TokenPayload) {
     const token = this.jwtService.sign(payload, {
       secret: process.env.ACCESS_TOKEN_SECRET,
       expiresIn: process.env.ACCESS_TOKEN_EXPIRE,

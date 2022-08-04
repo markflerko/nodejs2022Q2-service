@@ -27,7 +27,10 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Request() req: RequestWithUser) {
-    return this.authService.login(req.user.id);
+    return this.authService.login({
+      userId: req.user.id,
+      login: req.user.login,
+    });
   }
 
   @UseGuards(JwtAuthGuard)
