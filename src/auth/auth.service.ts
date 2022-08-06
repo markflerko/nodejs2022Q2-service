@@ -13,6 +13,19 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    const user = await this.usersService.findOne(userId);
+
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      user.currentHashedRefreshToken,
+    );
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+  }
+
   public async signup(registrationData: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(registrationData.password, 10);
     try {
@@ -65,13 +78,24 @@ export class AuthService {
   }
 
   async login(payload: TokenPayload) {
-    const token = this.jwtService.sign(payload, {
+    const access_token = this.jwtService.sign(payload, {
       secret: process.env.ACCESS_TOKEN_SECRET,
       expiresIn: process.env.ACCESS_TOKEN_EXPIRE,
     });
 
+    const refresh_token = this.jwtService.sign(payload, {
+      secret: process.env.REFRESH_TOKEN_SECRET,
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRE,
+    });
+
+    await this.usersService.setCurrentRefreshToken(
+      refresh_token,
+      payload.userId,
+    );
+
     return {
-      access_token: token,
+      access_token,
+      refresh_token,
     };
   }
 }

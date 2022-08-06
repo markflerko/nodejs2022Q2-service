@@ -20,6 +20,10 @@ export class User {
   @Exclude()
   password: string;
 
+  @Column({ nullable: true })
+  @Exclude()
+  currentHashedRefreshToken?: string;
+
   @VersionColumn({ default: 1 })
   version: number; // integer number, increments on update
 

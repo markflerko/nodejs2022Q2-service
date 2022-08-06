@@ -11,6 +11,7 @@ import {
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import JwtRefreshGuard from './guards/jwt-refresh.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import RequestWithUser from './types/requestWithUser.interface';
 
@@ -21,6 +22,16 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() dto: CreateUserDto) {
     return this.authService.signup(dto);
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Get('refresh')
+  @HttpCode(HttpStatus.OK)
+  refresh(@Request() request: RequestWithUser) {
+    return this.authService.login({
+      userId: request.user.id,
+      login: request.user.login,
+    });
   }
 
   @UseGuards(LocalAuthGuard)
