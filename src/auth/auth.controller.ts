@@ -25,7 +25,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtRefreshGuard)
-  @Get('refresh')
+  @Post('refresh')
   @HttpCode(HttpStatus.OK)
   refresh(@Request() request: RequestWithUser) {
     return this.authService.login({
