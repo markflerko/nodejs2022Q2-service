@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import PostgresErrorCode from 'src/types/postgresErrorCode.enum';
@@ -23,6 +28,8 @@ export class AuthService {
 
     if (isRefreshTokenMatching) {
       return user;
+    } else {
+      throw new ForbiddenException('Refresh token is invalid');
     }
   }
 
