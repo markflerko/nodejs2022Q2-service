@@ -56,7 +56,7 @@ export class AuthService {
     } catch (error) {
       throw new HttpException(
         'Wrong credentials provided',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.FORBIDDEN,
       );
     }
   }
@@ -72,7 +72,7 @@ export class AuthService {
     if (!isPasswordMatching) {
       throw new HttpException(
         'Wrong credentials provided',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.FORBIDDEN,
       );
     }
   }
